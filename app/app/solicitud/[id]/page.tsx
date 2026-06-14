@@ -44,7 +44,11 @@ export default function DetalleOperacion() {
 
   const autor = dentistById(solicitud.autorId)!;
   const comision = Math.round(solicitud.monto * COMISION_PCT);
-  const revelado = etapa !== "evaluando";
+  // Los datos completos de la contraparte se revelan recién al acreditarse la comisión.
+  const revelado = etapa === "cerrada";
+  const nombreAutor = revelado
+    ? `${autor.nombre} ${autor.apellido}`
+    : `${autor.nombre} ${autor.apellido[0]}.`;
   // El que mira es la contraparte: si el autor busca crédito, vos prestás (y viceversa).
   const perspectiva = solicitud.tipo === "tomar" ? "prestar" : "tomar";
 
@@ -73,13 +77,13 @@ export default function DetalleOperacion() {
                 <Avatar dentist={autor} size={58} />
                 <div>
                   <p className="flex items-center gap-1.5 font-semibold">
-                    {revelado ? `${autor.nombre} ${autor.apellido}` : `${autor.nombre} ${autor.apellido[0]}.`}
+                    {nombreAutor}
                     {!revelado && <Lock size={13} className="text-[var(--color-faint)]" />}
                   </p>
                   <p className="font-mono text-xs text-[var(--color-faint)]">
                     {revelado
                       ? `Mat. ${autor.matricula} · ${autor.ciudad}, ${autor.provincia}`
-                      : `${autor.provincia} · datos completos al acordar`}
+                      : `${autor.provincia} · datos completos al pagar la comisión`}
                   </p>
                   <div className="mt-1.5"><Reputacion valor={autor.reputacion} /></div>
                 </div>
@@ -115,6 +119,12 @@ export default function DetalleOperacion() {
             perspectiva={perspectiva}
           />
 
+          <Note>
+            <strong>Respaldo:</strong> si la contraparte no cumple, el fondo de garantía cubre al
+            prestamista y el chat trazable + el contrato quedan como evidencia para iniciar
+            acciones legales.
+          </Note>
+
           {/* Referencia de mercado (Fase 2) */}
           <div className="card-minimal p-6">
             <div className="flex items-center justify-between">
@@ -130,15 +140,15 @@ export default function DetalleOperacion() {
             <div className="mt-4 space-y-2.5">
               {[
                 { label: "Mutuum · esta operación", tasa: solicitud.tasaMin, fuerte: true },
-                { label: "Banco · préstamo personal", tasa: 9, fuerte: false },
-                { label: "Financiera", tasa: 13, fuerte: false },
+                { label: "Banco · préstamo personal", tasa: 4, fuerte: false },
+                { label: "Financiera", tasa: 6, fuerte: false },
               ].map((r) => (
                 <div key={r.label} className="flex items-center gap-3">
                   <span className="w-28 shrink-0 text-xs text-[var(--color-muted)] sm:w-44">{r.label}</span>
                   <div className="h-3 flex-1 overflow-hidden rounded-full bg-[var(--color-paper-2)]">
                     <div
                       className={`h-full rounded-full ${r.fuerte ? "gradient-mutuum" : "bg-[var(--color-line-strong)]"}`}
-                      style={{ width: `${Math.min(100, (r.tasa / 13) * 100)}%` }}
+                      style={{ width: `${Math.min(100, (r.tasa / 6) * 100)}%` }}
                     />
                   </div>
                   <span className={`w-14 text-right font-mono text-xs ${r.fuerte ? "font-semibold text-[var(--color-primary-dark)]" : "text-[var(--color-muted)]"}`}>
@@ -206,9 +216,9 @@ export default function DetalleOperacion() {
                   <FileSignature size={14} className="text-[var(--color-brass)]" /> CONTRATO DE MUTUO — {usd(solicitud.monto)}
                 </span>
                 <br />
-                Prestamista: {solicitud.tipo === "prestar" ? `${autor.nombre} ${autor.apellido}` : `${user?.nombre} ${user?.apellido}`}
+                Prestamista: {solicitud.tipo === "prestar" ? nombreAutor : `${user?.nombre} ${user?.apellido}`}
                 <br />
-                Tomador: {solicitud.tipo === "tomar" ? `${autor.nombre} ${autor.apellido}` : `${user?.nombre} ${user?.apellido}`}
+                Tomador: {solicitud.tipo === "tomar" ? nombreAutor : `${user?.nombre} ${user?.apellido}`}
                 <br />
                 Tasa: {pct(solicitud.tasaMin)} mensual · Plazo: {solicitud.plazoMeses} meses
                 <br />
@@ -327,10 +337,10 @@ export default function DetalleOperacion() {
             <ol className="space-y-2.5 text-sm">
               {[
                 ["evaluando", "Evaluando · chat abierto"],
-                ["acordado", "Acordar avanzar · revelar identidad"],
+                ["acordado", "Acordar avanzar"],
                 ["contrato", "Generar contrato"],
-                ["comprobante", "Cobrar comisión"],
-                ["cerrada", "Operación cerrada"],
+                ["comprobante", "Cobrar comisión · destraba datos"],
+                ["cerrada", "Operación cerrada · datos revelados"],
               ].map(([key, label], i) => {
                 const hecho = ORDER.indexOf(etapa) >= i;
                 return (

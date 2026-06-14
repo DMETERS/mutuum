@@ -12,15 +12,16 @@ import { usd } from "@/lib/format";
 export default function NuevaSolicitud() {
   const [tipo, setTipo] = useState<TipoSolicitud>("tomar");
   const [monto, setMonto] = useState(2000);
-  const [tasaMin, setTasaMin] = useState(3.5);
-  const [tasaMax, setTasaMax] = useState(5);
+  const [tasaMin, setTasaMin] = useState(1.5);
+  const [tasaMax, setTasaMax] = useState(2.2);
   const [plazo, setPlazo] = useState(6);
   const [categoriaId, setCategoriaId] = useState<string>("");
   const [destino, setDestino] = useState("");
   const [enviada, setEnviada] = useState(false);
 
   const cat = categoriaById(categoriaId);
-  const desvio = cat && cat.precioRef > 0 ? Math.round(((monto - cat.precioRef) / cat.precioRef) * 100) : null;
+  // El monto no puede superar el precio de referencia del insumo (cuando hay categoría).
+  const montoMax = tipo === "tomar" && cat ? cat.precioRef : 10000;
 
   if (enviada) {
     return (
@@ -97,7 +98,7 @@ export default function NuevaSolicitud() {
           <label className="font-grotesk text-sm font-semibold">Monto</label>
           <p className="font-display tabular text-3xl text-[var(--color-primary)]">{usd(monto)}</p>
           <input
-            type="range" min={500} max={10000} step={250} value={monto}
+            type="range" min={500} max={montoMax} step={250} value={Math.min(monto, montoMax)}
             aria-label="Monto" aria-valuetext={usd(monto)}
             onChange={(e) => setMonto(Number(e.target.value))}
             className="mt-2 w-full accent-[var(--color-primary)]"
@@ -134,21 +135,28 @@ export default function NuevaSolicitud() {
           <>
             <div>
               <label className="font-grotesk text-sm font-semibold">Destino del préstamo</label>
-              <select aria-label="Destino del préstamo" className="select-minimal mt-1.5" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+              <select
+                aria-label="Destino del préstamo"
+                className="select-minimal mt-1.5"
+                value={categoriaId}
+                onChange={(e) => {
+                  const id = e.target.value;
+                  setCategoriaId(id);
+                  const c = categoriaById(id);
+                  if (c && monto > c.precioRef) setMonto(c.precioRef);
+                }}
+              >
                 <option value="">Elegí una categoría…</option>
                 {categorias.map((c) => (
                   <option key={c.id} value={c.id}>{c.grupo} · {c.nombre} (ref. {usd(c.precioRef)})</option>
                 ))}
               </select>
             </div>
-            {cat && desvio !== null && (
+            {cat && (
               <Note>
-                Precio de referencia para <strong>{cat.nombre}</strong>: {usd(cat.precioRef)}.{" "}
-                {Math.abs(desvio) <= 10
-                  ? "Tu monto está alineado con el mercado."
-                  : desvio > 10
-                    ? `Tu monto está ${desvio}% por encima de la referencia — conviene justificarlo en el chat.`
-                    : `Tu monto está ${Math.abs(desvio)}% por debajo de la referencia.`}
+                Tope por destino: el monto no puede superar el precio de referencia de{" "}
+                <strong>{cat.nombre}</strong> ({usd(cat.precioRef)}). No se puede pedir más de lo
+                que cuesta el insumo.
               </Note>
             )}
           </>

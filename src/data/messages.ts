@@ -20,7 +20,7 @@ export const mensajes: Mensaje[] = [
     id: "m-3",
     solicitudId: "s-101",
     autorId: "d-laura",
-    texto: "Perfecto. Te puedo ofrecer a 4% mensual por 6 meses. ¿Avanzamos y generamos el contrato?",
+    texto: "Perfecto. Te puedo ofrecer a 2% mensual por 6 meses. ¿Avanzamos y generamos el contrato?",
     hora: "10:14",
   },
   {

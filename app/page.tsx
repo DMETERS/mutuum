@@ -117,7 +117,7 @@ export default function Landing() {
                   <p className="text-sm text-[var(--color-muted)]">Equipo de rayos X</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">3,5–5%</p>
+                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">1,5–2,2%</p>
                   <p className="font-mono text-xs text-[var(--color-faint)]">6 meses</p>
                 </div>
               </div>
