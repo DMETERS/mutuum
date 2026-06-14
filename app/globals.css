@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────
+   Mutuum — sistema de diseño
+   Base visual heredada de Dmeter (grayscale cálido + tipografías)
+   con accent verde propio de Mutuum (confianza + dinero).
+   ────────────────────────────────────────────────────────── */
+@theme {
+  /* Grayscale cálido */
+  --color-white: #fbf8f2;
+  --color-pure-white: #ffffff;
+  --color-gray-50: #f3efe7;
+  --color-gray-100: #e7e0d3;
+  --color-gray-200: #d6cdbd;
+  --color-gray-300: #b0a693;
+  --color-gray-400: #8a8071;
+  --color-gray-500: #6b6357;
+  --color-gray-600: #524b42;
+  --color-gray-700: #3a342d;
+  --color-gray-800: #262019;
+  --color-gray-900: #16110a;
+  --color-gray-950: #0b0b0f;
+
+  /* Accent Mutuum — verde */
+  --color-primary: #047857;
+  --color-primary-dark: #065f46;
+  --color-primary-light: #10b981;
+  --color-primary-soft: #d1fae5;
+  --color-on-accent: #ffffff;
+  --color-ink: #16110a;
+
+  /* Estados */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+  --color-info: #0ea5e9;
+
+  /* Tipografías (cargadas con next/font en layout.tsx → variables) */
+  --font-manrope: var(--font-manrope-src), system-ui, sans-serif;
+  --font-grotesk: var(--font-grotesk-src), system-ui, sans-serif;
+  --font-mono: var(--font-mono-src), "Fira Code", monospace;
+
+  /* Radios */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-white);
+  color: var(--color-ink);
+  font-family: var(--font-manrope);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-manrope);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.font-grotesk {
+  font-family: var(--font-grotesk);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Componentes utilitarios (estilo Dmeter, recoloreados) ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-accent);
+  font-family: var(--font-grotesk);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-grotesk);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--color-gray-400);
+  background-color: var(--color-gray-50);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--color-gray-600);
+  font-family: var(--font-grotesk);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-md);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.btn-ghost:hover {
+  color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.card-minimal {
+  background-color: var(--color-pure-white);
+  border: 1px solid var(--color-gray-100);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 1px 2px rgba(11, 11, 15, 0.04);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card-minimal:hover {
+  box-shadow: 0 8px 28px rgba(11, 11, 15, 0.08);
+  border-color: var(--color-gray-200);
+}
+
+.input-minimal,
+.select-minimal {
+  width: 100%;
+  background-color: var(--color-pure-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-manrope);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input-minimal:focus,
+.select-minimal:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-grotesk);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.gradient-mutuum {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+/* Scrollbar sutil */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-200);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-gray-300); }
+
+/* Animaciones */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  animation: fade-in-up 0.5s ease both;
+}
+
+/* Leaflet: que el contenedor no tape el header */
+.leaflet-container {
+  font-family: var(--font-manrope);
+  border-radius: var(--radius-lg);
+  z-index: 0;
+}
