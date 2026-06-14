@@ -64,6 +64,7 @@ export default function Matching() {
           <div>
             <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">Tipo</label>
             <select
+              aria-label="Tipo de solicitud"
               className="select-minimal mt-1.5"
               value={tipo}
               onChange={(e) => setTipo(e.target.value as TipoSolicitud | "todas")}
@@ -76,6 +77,7 @@ export default function Matching() {
           <div>
             <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">Provincia</label>
             <select
+              aria-label="Provincia"
               className="select-minimal mt-1.5"
               value={provincia}
               onChange={(e) => setProvincia(e.target.value as Provincia | "Todas")}
@@ -91,6 +93,7 @@ export default function Matching() {
             </label>
             <input
               type="range" min={500} max={7000} step={250} value={montoMax}
+              aria-label="Monto máximo" aria-valuetext={usd(montoMax)}
               onChange={(e) => setMontoMax(Number(e.target.value))}
               className="mt-4 w-full accent-[var(--color-primary)]"
             />
@@ -101,6 +104,7 @@ export default function Matching() {
             </label>
             <input
               type="range" min={300} max={850} step={10} value={scoreMin}
+              aria-label="Score mínimo" aria-valuetext={String(scoreMin)}
               onChange={(e) => setScoreMin(Number(e.target.value))}
               className="mt-4 w-full accent-[var(--color-primary)]"
             />
@@ -118,7 +122,11 @@ export default function Matching() {
             <div
               key={s.id}
               onMouseEnter={() => setSelected(s.id)}
-              className={`card-minimal p-5 transition-all ${
+              onClick={() => setSelected(s.id)}
+              onFocus={() => setSelected(s.id)}
+              tabIndex={0}
+              aria-label={`Solicitud de ${autor.nombre} ${autor.apellido}, ${usd(s.monto)}`}
+              className={`card-minimal cursor-pointer p-5 transition-all ${
                 selected === s.id ? "border-[var(--color-primary)] ring-1 ring-[var(--color-primary)]" : ""
               }`}
             >
@@ -144,7 +152,7 @@ export default function Matching() {
                   <p className="text-sm text-[var(--color-muted)]">{s.destino}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono text-sm font-semibold text-[var(--color-primary)]">
+                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">
                     {pct(s.tasaMin)}–{pct(s.tasaMax)}
                   </p>
                   <p className="font-mono text-xs text-[var(--color-faint)]">{s.plazoMeses} meses</p>
@@ -174,6 +182,14 @@ export default function Matching() {
             <div className="h-[440px]">
               <MatchingMap pins={pins} selectedId={selected} onSelect={setSelected} />
             </div>
+          </div>
+          <div className="flex items-center gap-5 px-1 text-xs text-[var(--color-muted)]">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: "#0c6b4f" }} /> Ofrece capital
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: "#2f6f8f" }} /> Busca crédito
+            </span>
           </div>
           {sel && (
             <div className="card-minimal flex items-center gap-5 p-5">

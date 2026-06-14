@@ -14,6 +14,7 @@ import { mensajesDeSolicitud } from "@/data/messages";
 import type { Mensaje } from "@/lib/types";
 import { Avatar, Reputacion, Verificado, Chip, Note, SectionTitle } from "@/components/ui";
 import { ScoreGauge } from "@/components/ScoreGauge";
+import { LoanSim } from "@/components/LoanSim";
 import { usd, pct } from "@/lib/format";
 
 type Etapa = "evaluando" | "acordado" | "contrato" | "comprobante" | "cerrada";
@@ -44,6 +45,8 @@ export default function DetalleOperacion() {
   const autor = dentistById(solicitud.autorId)!;
   const comision = Math.round(solicitud.monto * COMISION_PCT);
   const revelado = etapa !== "evaluando";
+  // El que mira es la contraparte: si el autor busca crédito, vos prestás (y viceversa).
+  const perspectiva = solicitud.tipo === "tomar" ? "prestar" : "tomar";
 
   const enviar = () => {
     if (!texto.trim() || !user) return;
@@ -103,6 +106,15 @@ export default function DetalleOperacion() {
             <p className="mt-4 text-sm text-[var(--color-muted)]">{solicitud.destino}</p>
           </div>
 
+          {/* Simulación de pago/cobro */}
+          <LoanSim
+            monto={solicitud.monto}
+            tasaMin={solicitud.tasaMin}
+            tasaMax={solicitud.tasaMax}
+            plazo={solicitud.plazoMeses}
+            perspectiva={perspectiva}
+          />
+
           {/* Referencia de mercado (Fase 2) */}
           <div className="card-minimal p-6">
             <div className="flex items-center justify-between">
@@ -122,14 +134,14 @@ export default function DetalleOperacion() {
                 { label: "Financiera", tasa: 13, fuerte: false },
               ].map((r) => (
                 <div key={r.label} className="flex items-center gap-3">
-                  <span className="w-44 shrink-0 text-xs text-[var(--color-muted)]">{r.label}</span>
+                  <span className="w-28 shrink-0 text-xs text-[var(--color-muted)] sm:w-44">{r.label}</span>
                   <div className="h-3 flex-1 overflow-hidden rounded-full bg-[var(--color-paper-2)]">
                     <div
                       className={`h-full rounded-full ${r.fuerte ? "gradient-mutuum" : "bg-[var(--color-line-strong)]"}`}
                       style={{ width: `${Math.min(100, (r.tasa / 13) * 100)}%` }}
                     />
                   </div>
-                  <span className={`w-14 text-right font-mono text-xs ${r.fuerte ? "font-semibold text-[var(--color-primary)]" : "text-[var(--color-muted)]"}`}>
+                  <span className={`w-14 text-right font-mono text-xs ${r.fuerte ? "font-semibold text-[var(--color-primary-dark)]" : "text-[var(--color-muted)]"}`}>
                     {pct(r.tasa)}
                   </span>
                 </div>
@@ -148,7 +160,7 @@ export default function DetalleOperacion() {
               evidencia legal.
             </p>
 
-            <div className="mt-4 max-h-72 space-y-3 overflow-y-auto pr-1">
+            <div className="mt-4 max-h-72 space-y-3 overflow-y-auto pr-1" aria-live="polite">
               {chat.map((m) => {
                 const mio = m.autorId === user?.id;
                 return (
@@ -173,6 +185,7 @@ export default function DetalleOperacion() {
             <div className="mt-4 flex gap-2">
               <input
                 value={texto}
+                aria-label="Mensaje"
                 onChange={(e) => setTexto(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && enviar()}
                 placeholder="Escribí un mensaje…"

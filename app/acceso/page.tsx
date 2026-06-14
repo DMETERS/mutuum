@@ -66,7 +66,7 @@ export default function Acceso() {
                 </div>
                 <Reputacion valor={d.reputacion} />
                 <p className="text-sm leading-relaxed text-[var(--color-muted)]">{p.descripcion}</p>
-                <span className="font-grotesk mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)]">
+                <span className="font-grotesk mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary-dark)]">
                   Entrar como {d.nombre}
                   <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
                 </span>

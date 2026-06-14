@@ -120,7 +120,7 @@ export default function Dashboard() {
               {oportunidades.length} oportunidades en el NEA
             </h2>
             <p className="mt-2 max-w-md text-sm text-white/80">
-              Solicitudes de colegas que cruzan con tu perfil. Vélas en el mapa y filtrá por
+              Solicitudes de colegas que cruzan con tu perfil. Mirálas en el mapa y filtrá por
               monto, tasa y score.
             </p>
           </div>

@@ -39,6 +39,7 @@ import {
   BadgeCheck as IoBadgeCheck,
   MessageText,
   ClipboardCheck as IoClipboardCheck,
+  Calculator as IoCalculator,
 } from "iconoir-react";
 
 export type IconProps = {
@@ -97,6 +98,7 @@ export const FileSignature = wrap(PageEdit);
 export const MessageSquareText = wrap(MessageText);
 export const ClipboardCheck = wrap(IoClipboardCheck);
 export const Info = wrap(InfoCircle);
+export const Calculator = wrap(IoCalculator);
 
 // Identidad / confianza
 export const IdCard = wrap(Healthcare);

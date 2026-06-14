@@ -98,7 +98,7 @@ export default function Landing() {
               <div className="mt-5 flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  src="/avatars/martin.jpg"
                   alt="Dr. Martín Ferreyra"
                   width={48}
                   height={48}
@@ -117,7 +117,7 @@ export default function Landing() {
                   <p className="text-sm text-[var(--color-muted)]">Equipo de rayos X</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono text-sm font-semibold text-[var(--color-primary)]">3,5–5%</p>
+                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">3,5–5%</p>
                   <p className="font-mono text-xs text-[var(--color-faint)]">6 meses</p>
                 </div>
               </div>

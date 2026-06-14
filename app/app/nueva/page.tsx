@@ -6,6 +6,7 @@ import { ArrowRight, ArrowLeftRight, Check, HandCoins, Wallet } from "@/componen
 import type { TipoSolicitud } from "@/lib/types";
 import { categorias, categoriaById } from "@/data/categories";
 import { SectionTitle, Note } from "@/components/ui";
+import { LoanSim } from "@/components/LoanSim";
 import { usd } from "@/lib/format";
 
 export default function NuevaSolicitud() {
@@ -52,7 +53,13 @@ export default function NuevaSolicitud() {
         desc="Cargá los datos. El capital viaja directo entre las partes; Mutuum solo documenta y cobra su comisión."
       />
 
-      <div className="card-minimal space-y-7 p-8">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setEnviada(true);
+        }}
+        className="card-minimal space-y-7 p-8"
+      >
         {/* Tipo */}
         <div>
           <label className="font-grotesk text-sm font-semibold">¿Qué querés hacer?</label>
@@ -63,6 +70,7 @@ export default function NuevaSolicitud() {
             ]).map(({ t, icon: Icon, title, sub }) => (
               <button
                 key={t}
+                type="button"
                 onClick={() => setTipo(t)}
                 className={`flex items-start gap-3 rounded-[var(--radius-lg)] border p-4 text-left transition-all ${
                   tipo === t
@@ -90,6 +98,7 @@ export default function NuevaSolicitud() {
           <p className="font-display tabular text-3xl text-[var(--color-primary)]">{usd(monto)}</p>
           <input
             type="range" min={500} max={10000} step={250} value={monto}
+            aria-label="Monto" aria-valuetext={usd(monto)}
             onChange={(e) => setMonto(Number(e.target.value))}
             className="mt-2 w-full accent-[var(--color-primary)]"
           />
@@ -101,28 +110,31 @@ export default function NuevaSolicitud() {
             <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
               Tasa mín. <span className="text-[var(--color-faint)]">%/mes</span>
             </label>
-            <input type="number" step={0.1} value={tasaMin} onChange={(e) => setTasaMin(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
+            <input type="number" min={0} max={tasaMax} step={0.1} value={tasaMin} onChange={(e) => setTasaMin(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
           <div>
             <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
               Tasa máx. <span className="text-[var(--color-faint)]">%/mes</span>
             </label>
-            <input type="number" step={0.1} value={tasaMax} onChange={(e) => setTasaMax(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
+            <input type="number" min={tasaMin} step={0.1} value={tasaMax} onChange={(e) => setTasaMax(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
           <div className="col-span-2 sm:col-span-1">
             <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
               Plazo <span className="text-[var(--color-faint)]">meses</span>
             </label>
-            <input type="number" value={plazo} onChange={(e) => setPlazo(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
+            <input type="number" min={1} max={36} value={plazo} onChange={(e) => setPlazo(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
         </div>
+
+        {/* Simulación en vivo */}
+        <LoanSim monto={monto} tasaMin={tasaMin} tasaMax={tasaMax} plazo={plazo} perspectiva={tipo} />
 
         {/* Categoría + destino (solo tomar) */}
         {tipo === "tomar" && (
           <>
             <div>
               <label className="font-grotesk text-sm font-semibold">Destino del préstamo</label>
-              <select className="select-minimal mt-1.5" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
+              <select aria-label="Destino del préstamo" className="select-minimal mt-1.5" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
                 <option value="">Elegí una categoría…</option>
                 {categorias.map((c) => (
                   <option key={c.id} value={c.id}>{c.grupo} · {c.nombre} (ref. {usd(c.precioRef)})</option>
@@ -151,10 +163,10 @@ export default function NuevaSolicitud() {
           />
         </div>
 
-        <button onClick={() => setEnviada(true)} className="btn-primary w-full justify-center">
+        <button type="submit" className="btn-primary w-full justify-center">
           Publicar solicitud <ArrowRight size={16} />
         </button>
-      </div>
+      </form>
     </div>
   );
 }

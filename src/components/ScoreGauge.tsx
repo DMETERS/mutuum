@@ -49,7 +49,10 @@ export function ScoreGauge({ score, size = 160 }: { score: number; size?: number
       </svg>
       <span
         className="chip -mt-1"
-        style={{ background: "var(--color-primary-soft)", color: band.color }}
+        style={{
+          background: `color-mix(in srgb, ${band.color} 16%, white)`,
+          color: `color-mix(in srgb, ${band.color} 72%, black)`,
+        }}
       >
         {band.label}
       </span>

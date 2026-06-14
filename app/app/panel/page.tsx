@@ -90,7 +90,7 @@ export default function Panel() {
                 </div>
                 <div className="flex items-center justify-between gap-6">
                   <div className="text-right">
-                    <p className="font-mono text-sm font-semibold text-[var(--color-primary)]">{usd(c.comision)}</p>
+                    <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">{usd(c.comision)}</p>
                     <p className="font-mono text-[11px] text-[var(--color-faint)]">de {usd(c.monto)} · {c.hora}</p>
                   </div>
                   {confirmada ? (
@@ -126,7 +126,7 @@ export default function Panel() {
               </div>
               <div className="flex items-center justify-between gap-6">
                 <div className="text-right">
-                  <p className="font-mono text-sm font-semibold text-[var(--color-primary)]">{usd(c.comision)}</p>
+                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">{usd(c.comision)}</p>
                   <p className="font-mono text-[11px] text-[var(--color-faint)]">de {usd(c.monto)} · {c.hora}</p>
                 </div>
                 <Chip tone="green"><Zap size={12} /> Acreditada al instante</Chip>
