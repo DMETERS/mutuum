@@ -83,6 +83,20 @@ export const solicitudes: Solicitud[] = [
     estado: "activa",
     publicada: "hace 6 días",
   },
+  {
+    id: "s-204",
+    tipo: "tomar",
+    autorId: "d-sofia",
+    monto: 1800,
+    tasaMin: 3.5,
+    tasaMax: 4.5,
+    plazoMeses: 6,
+    distanciaKm: 0,
+    destino: "Sensor RVG para digitalizar las radiografías del consultorio",
+    categoria: "rvg",
+    estado: "activa",
+    publicada: "hace 2 días",
+  },
 ];
 
 export const solicitudById = (id: string): Solicitud | undefined =>

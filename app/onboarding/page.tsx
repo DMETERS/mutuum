@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { IdCard, ScanFace, Fingerprint, HeartHandshake, Check, ArrowRight, ArrowLeft, type IconType } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
 
-const steps = [
+const steps: { key: string; icon: IconType; titulo: string; desc: string; detalle: string; cta: string }[] = [
   {
     key: "matricula",
+    icon: IdCard,
     titulo: "Matrícula profesional",
     desc: "Validamos automáticamente que tu matrícula esté vigente en el colegio de odontólogos.",
     detalle: "Matrícula OCH-2418 · Colegio de Odontólogos del Chaco · estado: vigente",
@@ -15,6 +17,7 @@ const steps = [
   },
   {
     key: "renaper",
+    icon: ScanFace,
     titulo: "Identidad — Renaper",
     desc: "Contrastamos los datos de tu documento contra el registro nacional de las personas.",
     detalle: "DNI verificado contra Renaper · nombre y fecha de nacimiento coinciden",
@@ -22,6 +25,7 @@ const steps = [
   },
   {
     key: "kyc",
+    icon: Fingerprint,
     titulo: "Biometría facial (KYC)",
     desc: "Documento + prueba de vida + coincidencia de rostro con antifraude llave en mano.",
     detalle: "Prueba de vida superada · rostro coincide con el documento · sin alertas de fraude",
@@ -29,6 +33,7 @@ const steps = [
   },
   {
     key: "vouching",
+    icon: HeartHandshake,
     titulo: "Aval de un colega",
     desc: "Un odontólogo ya registrado avala tu ingreso y vincula su reputación a la tuya.",
     detalle: "Avalada por la Dra. Laura Benítez (Resistencia) · reputación 4.9",
@@ -50,76 +55,82 @@ export default function Onboarding() {
   };
 
   const todoListo = done.every(Boolean);
+  const Icon = steps[current].icon;
 
   return (
-    <div className="min-h-screen">
+    <div className="hero-mesh min-h-screen">
       <header className="mx-auto max-w-3xl px-5 py-5">
-        <Link href="/" className="font-grotesk text-xl font-bold tracking-tight">
-          <span className="text-[var(--color-primary)]">●</span> Mutuum
-        </Link>
+        <Link href="/" className="wordmark text-2xl">Mutuum</Link>
       </header>
 
       <main className="mx-auto max-w-3xl px-5 py-10">
-        <div className="mb-8">
-          <span className="chip bg-[var(--color-primary-soft)] text-[var(--color-primary-dark)]">
-            Alta de colega
-          </span>
-          <h1 className="mt-4 text-3xl font-bold">Verificación en cuatro pasos</h1>
-          <p className="mt-2 text-[var(--color-gray-600)]">
+        <div className="mb-10">
+          <span className="chip chip-primary">Alta de colega</span>
+          <h1 className="font-display mt-5 text-[2.4rem] leading-tight">Verificación en cuatro pasos</h1>
+          <p className="mt-2 text-[var(--color-muted)]">
             Así se da de alta un odontólogo nuevo. Todo simulado para el demo.
           </p>
         </div>
 
         {/* Progreso */}
-        <div className="mb-8 flex items-center gap-2">
+        <div className="mb-8 flex items-center">
           {steps.map((s, i) => (
-            <div key={s.key} className="flex flex-1 items-center gap-2">
+            <div key={s.key} className="flex flex-1 items-center last:flex-none">
               <div
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
                   done[i]
-                    ? "bg-[var(--color-primary)] text-white"
+                    ? "bg-[var(--color-primary)] text-white shadow-[var(--shadow-primary)]"
                     : i === current
-                      ? "bg-[var(--color-primary-soft)] text-[var(--color-primary-dark)]"
-                      : "bg-[var(--color-gray-100)] text-[var(--color-gray-400)]"
+                      ? "bg-[var(--color-primary-soft)] text-[var(--color-primary-dark)] ring-2 ring-[var(--color-primary)]"
+                      : "bg-[var(--color-paper-2)] text-[var(--color-faint)]"
                 }`}
               >
-                {done[i] ? "✓" : i + 1}
+                {done[i] ? <Check size={16} strokeWidth={3} /> : i + 1}
               </div>
               {i < steps.length - 1 && (
-                <div
-                  className={`h-0.5 flex-1 ${done[i] ? "bg-[var(--color-primary)]" : "bg-[var(--color-gray-100)]"}`}
-                />
+                <div className={`mx-2 h-0.5 flex-1 rounded-full ${done[i] ? "bg-[var(--color-primary)]" : "bg-[var(--color-line)]"}`} />
               )}
             </div>
           ))}
         </div>
 
         {/* Paso actual */}
-        <div className="card-minimal p-7">
-          <p className="font-mono text-xs text-[var(--color-primary)]">
-            Paso {current + 1} de {steps.length}
-          </p>
-          <h2 className="mt-2 text-2xl font-bold">{steps[current].titulo}</h2>
-          <p className="mt-2 text-[var(--color-gray-600)]">{steps[current].desc}</p>
+        <div className="card-minimal p-8">
+          <div className="flex items-start gap-4">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
+              <Icon size={22} strokeWidth={1.8} />
+            </span>
+            <div>
+              <p className="font-mono text-xs text-[var(--color-primary)]">
+                Paso {current + 1} de {steps.length}
+              </p>
+              <h2 className="font-display mt-1 text-2xl">{steps[current].titulo}</h2>
+            </div>
+          </div>
+          <p className="mt-4 text-[var(--color-muted)]">{steps[current].desc}</p>
 
-          <div className="mt-5 rounded-[var(--radius-lg)] bg-[var(--color-gray-50)] p-4 font-mono text-xs text-[var(--color-gray-700)]">
-            {done[current] ? "✓ " : "› "}
+          <div className="mt-5 flex items-center gap-2 rounded-[var(--radius-md)] bg-[var(--color-paper-2)] p-4 font-mono text-xs text-[var(--color-ink-soft)]">
+            {done[current] ? (
+              <Check size={14} className="shrink-0 text-[var(--color-primary)]" strokeWidth={3} />
+            ) : (
+              <ArrowRight size={14} className="shrink-0 text-[var(--color-faint)]" />
+            )}
             {steps[current].detalle}
           </div>
 
           <div className="mt-6 flex items-center gap-3">
             {!done[current] ? (
               <button onClick={() => completar(current)} className="btn-primary">
-                {steps[current].cta}
+                {steps[current].cta} <ArrowRight size={16} />
               </button>
             ) : (
-              <span className="font-grotesk text-sm font-semibold text-[var(--color-primary)]">
-                ✓ Paso verificado
+              <span className="font-grotesk inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)]">
+                <Check size={16} strokeWidth={3} /> Paso verificado
               </span>
             )}
             {current > 0 && (
               <button onClick={() => setCurrent(current - 1)} className="btn-ghost">
-                ← Anterior
+                <ArrowLeft size={15} /> Anterior
               </button>
             )}
           </div>
@@ -127,11 +138,11 @@ export default function Onboarding() {
 
         {/* Cierre */}
         {todoListo && (
-          <div className="animate-in mt-6 rounded-[var(--radius-xl)] border border-[var(--color-primary)] bg-[var(--color-primary-soft)] p-6">
-            <h3 className="text-lg font-bold text-[var(--color-primary-dark)]">
-              ✓ Cuenta verificada
+          <div className="animate-in mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-primary)] bg-[var(--color-primary-tint)] p-7">
+            <h3 className="font-display flex items-center gap-2 text-xl text-[var(--color-primary-dark)]">
+              <Check size={20} strokeWidth={3} /> Cuenta verificada
             </h3>
-            <p className="mt-1 text-sm text-[var(--color-gray-700)]">
+            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">
               Identidad, matrícula, biometría y aval confirmados. Ya podés operar en Mutuum.
             </p>
             <button
@@ -139,9 +150,9 @@ export default function Onboarding() {
                 signIn("d-martin");
                 router.push("/app");
               }}
-              className="btn-primary mt-4"
+              className="btn-primary mt-5"
             >
-              Entrar a la plataforma →
+              Entrar a la plataforma <ArrowRight size={16} />
             </button>
           </div>
         )}

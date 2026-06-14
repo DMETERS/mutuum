@@ -10,6 +10,7 @@ export const dentists: Dentist[] = [
     ciudad: "Resistencia",
     provincia: "Chaco",
     coords: [-27.4514, -58.9867],
+    avatar: "https://randomuser.me/api/portraits/women/65.jpg",
     reputacion: 4.9,
     operaciones: 23,
     score: 812,
@@ -26,6 +27,7 @@ export const dentists: Dentist[] = [
     ciudad: "Corrientes",
     provincia: "Corrientes",
     coords: [-27.4692, -58.8306],
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
     reputacion: 4.6,
     operaciones: 11,
     score: 688,
@@ -43,6 +45,7 @@ export const dentists: Dentist[] = [
     ciudad: "Posadas",
     provincia: "Misiones",
     coords: [-27.3621, -55.9008],
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     reputacion: 4.8,
     operaciones: 17,
     score: 770,
@@ -60,6 +63,7 @@ export const dentists: Dentist[] = [
     ciudad: "Pdcia. Roque Sáenz Peña",
     provincia: "Chaco",
     coords: [-26.7852, -60.4388],
+    avatar: "https://randomuser.me/api/portraits/men/75.jpg",
     reputacion: 4.3,
     operaciones: 6,
     score: 642,
@@ -77,6 +81,7 @@ export const dentists: Dentist[] = [
     ciudad: "Goya",
     provincia: "Corrientes",
     coords: [-29.1402, -59.2614],
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
     reputacion: 4.7,
     operaciones: 14,
     score: 731,
@@ -94,6 +99,7 @@ export const dentists: Dentist[] = [
     ciudad: "Oberá",
     provincia: "Misiones",
     coords: [-27.4858, -55.1199],
+    avatar: "https://randomuser.me/api/portraits/men/51.jpg",
     reputacion: 4.1,
     operaciones: 4,
     score: 610,
@@ -127,8 +133,14 @@ export const demoProfiles: DemoProfile[] = [
   {
     dentistId: "d-sofia",
     rol: "admin",
-    titulo: "Vista operación + panel",
+    titulo: "Dra. Sofía Acosta",
     descripcion:
-      "Perfil mixto (presta y toma) con acceso al panel de confirmación de comisiones del equipo.",
+      "Perfil mixto: tiene una solicitud para prestar y otra para tomar. Además es operadora del equipo, con acceso al panel de confirmación de comisiones (Fase 1).",
   },
 ];
+
+export const profileOf = (dentistId: string): DemoProfile | undefined =>
+  demoProfiles.find((p) => p.dentistId === dentistId);
+
+export const isAdmin = (dentistId?: string): boolean =>
+  !!dentistId && profileOf(dentistId)?.rol === "admin";

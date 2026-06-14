@@ -8,14 +8,15 @@ import { usd, pct } from "@/lib/format";
 
 // Ícono custom (divIcon) para no depender de los assets de Leaflet en el bundle.
 function pinIcon(tipo: Solicitud["tipo"], activo: boolean): L.DivIcon {
-  const color = tipo === "prestar" ? "#047857" : "#0ea5e9";
-  const ring = activo ? "box-shadow:0 0 0 4px rgba(4,120,87,.25);" : "";
+  const color = tipo === "prestar" ? "#0c6b4f" : "#2f6f8f";
+  const size = activo ? 24 : 18;
+  const ring = activo ? "box-shadow:0 0 0 5px rgba(12,107,79,.22);" : "box-shadow:0 2px 4px rgba(21,20,15,.25);";
   return L.divIcon({
     className: "",
-    html: `<div style="background:${color};width:18px;height:18px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;${ring}"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 18],
-    popupAnchor: [0, -16],
+    html: `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid #fffdf9;${ring}transition:all .2s ease;"></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size],
+    popupAnchor: [0, -size + 2],
   });
 }
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
+import { ArrowRight, MapPin, SlidersHorizontal, Gauge } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
 import { solicitudes } from "@/data/requests";
 import { dentistById } from "@/data/dentists";
@@ -11,11 +12,10 @@ import { Avatar, Reputacion, Chip, SectionTitle } from "@/components/ui";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { usd, pct } from "@/lib/format";
 
-// El mapa usa Leaflet (window) → sin SSR.
 const MatchingMap = dynamic(() => import("@/components/MatchingMap"), {
   ssr: false,
   loading: () => (
-    <div className="grid h-full min-h-[380px] place-items-center rounded-[var(--radius-lg)] bg-[var(--color-gray-50)] text-sm text-[var(--color-gray-400)]">
+    <div className="grid h-full min-h-[420px] place-items-center bg-[var(--color-paper-2)] text-sm text-[var(--color-faint)]">
       Cargando mapa del NEA…
     </div>
   ),
@@ -56,90 +56,81 @@ export default function Matching() {
       />
 
       {/* Filtros */}
-      <div className="card-minimal grid gap-4 p-5 md:grid-cols-4">
-        <div>
-          <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">Tipo</label>
-          <select
-            className="select-minimal mt-1"
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value as TipoSolicitud | "todas")}
-          >
-            <option value="todas">Todas</option>
-            <option value="tomar">Buscan crédito (tomadores)</option>
-            <option value="prestar">Ofrecen capital (prestamistas)</option>
-          </select>
-        </div>
-        <div>
-          <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">Provincia</label>
-          <select
-            className="select-minimal mt-1"
-            value={provincia}
-            onChange={(e) => setProvincia(e.target.value as Provincia | "Todas")}
-          >
-            {provincias.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">
-            Monto máximo · {usd(montoMax)}
-          </label>
-          <input
-            type="range"
-            min={500}
-            max={7000}
-            step={250}
-            value={montoMax}
-            onChange={(e) => setMontoMax(Number(e.target.value))}
-            className="mt-3 w-full accent-[var(--color-primary)]"
-          />
-        </div>
-        <div>
-          <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">
-            Score mínimo · {scoreMin}
-          </label>
-          <input
-            type="range"
-            min={300}
-            max={850}
-            step={10}
-            value={scoreMin}
-            onChange={(e) => setScoreMin(Number(e.target.value))}
-            className="mt-3 w-full accent-[var(--color-primary)]"
-          />
+      <div className="card-minimal p-5">
+        <p className="eyebrow mb-4 flex items-center gap-1.5">
+          <SlidersHorizontal size={13} /> Filtros
+        </p>
+        <div className="grid gap-5 md:grid-cols-4">
+          <div>
+            <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">Tipo</label>
+            <select
+              className="select-minimal mt-1.5"
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value as TipoSolicitud | "todas")}
+            >
+              <option value="todas">Todas</option>
+              <option value="tomar">Buscan crédito (tomadores)</option>
+              <option value="prestar">Ofrecen capital (prestamistas)</option>
+            </select>
+          </div>
+          <div>
+            <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">Provincia</label>
+            <select
+              className="select-minimal mt-1.5"
+              value={provincia}
+              onChange={(e) => setProvincia(e.target.value as Provincia | "Todas")}
+            >
+              {provincias.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">
+              Monto máximo · <span className="font-mono text-[var(--color-ink)]">{usd(montoMax)}</span>
+            </label>
+            <input
+              type="range" min={500} max={7000} step={250} value={montoMax}
+              onChange={(e) => setMontoMax(Number(e.target.value))}
+              className="mt-4 w-full accent-[var(--color-primary)]"
+            />
+          </div>
+          <div>
+            <label className="font-grotesk text-xs font-semibold text-[var(--color-muted)]">
+              Score mínimo · <span className="font-mono text-[var(--color-ink)]">{scoreMin}</span>
+            </label>
+            <input
+              type="range" min={300} max={850} step={10} value={scoreMin}
+              onChange={(e) => setScoreMin(Number(e.target.value))}
+              className="mt-4 w-full accent-[var(--color-primary)]"
+            />
+          </div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         {/* Lista */}
         <div className="space-y-4">
-          <p className="font-mono text-xs text-[var(--color-gray-500)]">
+          <p className="font-mono text-xs text-[var(--color-muted)]">
             {filtradas.length} resultado{filtradas.length === 1 ? "" : "s"}
           </p>
           {filtradas.map(({ s, autor }) => (
             <div
               key={s.id}
               onMouseEnter={() => setSelected(s.id)}
-              className={`card-minimal p-5 transition-shadow ${
-                selected === s.id ? "ring-2 ring-[var(--color-primary)]" : ""
+              className={`card-minimal p-5 transition-all ${
+                selected === s.id ? "border-[var(--color-primary)] ring-1 ring-[var(--color-primary)]" : ""
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <Avatar dentist={autor} size={44} />
+                  <Avatar dentist={autor} size={46} />
                   <div>
-                    <p className="font-semibold leading-tight">
-                      {autor.nombre} {autor.apellido}
+                    <p className="font-semibold leading-tight">{autor.nombre} {autor.apellido}</p>
+                    <p className="font-mono text-xs text-[var(--color-faint)]">
+                      <MapPin size={11} className="-mt-0.5 inline" /> {autor.ciudad}, {autor.provincia} · {s.distanciaKm} km
                     </p>
-                    <p className="font-mono text-xs text-[var(--color-gray-500)]">
-                      {autor.ciudad}, {autor.provincia} · {s.distanciaKm} km
-                    </p>
-                    <div className="mt-1">
-                      <Reputacion valor={autor.reputacion} />
-                    </div>
+                    <div className="mt-1.5"><Reputacion valor={autor.reputacion} /></div>
                   </div>
                 </div>
                 <Chip tone={s.tipo === "prestar" ? "green" : "blue"}>
@@ -149,57 +140,52 @@ export default function Matching() {
 
               <div className="mt-4 flex items-end justify-between">
                 <div>
-                  <p className="font-mono text-2xl font-bold">{usd(s.monto)}</p>
-                  <p className="text-sm text-[var(--color-gray-600)]">{s.destino}</p>
+                  <p className="font-display tabular text-3xl">{usd(s.monto)}</p>
+                  <p className="text-sm text-[var(--color-muted)]">{s.destino}</p>
                 </div>
                 <div className="text-right">
                   <p className="font-mono text-sm font-semibold text-[var(--color-primary)]">
                     {pct(s.tasaMin)}–{pct(s.tasaMax)}
                   </p>
-                  <p className="font-mono text-xs text-[var(--color-gray-400)]">
-                    {s.plazoMeses} meses
-                  </p>
+                  <p className="font-mono text-xs text-[var(--color-faint)]">{s.plazoMeses} meses</p>
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-[var(--color-gray-100)] pt-3">
-                <span className="font-mono text-xs text-[var(--color-gray-500)]">
-                  Score {autor.score} · publicada {s.publicada}
+              <div className="mt-4 flex items-center justify-between border-t border-[var(--color-line)] pt-3">
+                <span className="flex items-center gap-1.5 font-mono text-xs text-[var(--color-muted)]">
+                  <Gauge size={13} className="text-[var(--color-primary)]" /> Score {autor.score} · {s.publicada}
                 </span>
                 <Link href={`/app/solicitud/${s.id}`} className="btn-ghost">
-                  Ver operación →
+                  Ver operación <ArrowRight size={14} />
                 </Link>
               </div>
             </div>
           ))}
           {filtradas.length === 0 && (
-            <div className="card-minimal p-8 text-center text-sm text-[var(--color-gray-500)]">
-              No hay solicitudes con esos filtros. Probá ampliar el monto o bajar el score
-              mínimo.
+            <div className="card-minimal p-8 text-center text-sm text-[var(--color-muted)]">
+              No hay solicitudes con esos filtros. Probá ampliar el monto o bajar el score mínimo.
             </div>
           )}
         </div>
 
         {/* Mapa + match destacado */}
-        <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+        <div className="space-y-4 lg:sticky lg:top-28 lg:self-start">
           <div className="card-minimal overflow-hidden p-0">
-            <div className="h-[420px]">
+            <div className="h-[440px]">
               <MatchingMap pins={pins} selectedId={selected} onSelect={setSelected} />
             </div>
           </div>
           {sel && (
             <div className="card-minimal flex items-center gap-5 p-5">
-              <ScoreGauge score={sel.autor.score} size={120} />
+              <ScoreGauge score={sel.autor.score} size={118} />
               <div>
-                <p className="font-grotesk text-xs uppercase tracking-wide text-[var(--color-gray-500)]">
-                  Match destacado
+                <p className="eyebrow">Match destacado</p>
+                <p className="mt-1.5 font-semibold">
+                  {sel.autor.nombre} {sel.autor.apellido} · <span className="font-mono">{usd(sel.s.monto)}</span>
                 </p>
-                <p className="mt-1 font-semibold">
-                  {sel.autor.nombre} {sel.autor.apellido} · {usd(sel.s.monto)}
-                </p>
-                <p className="text-sm text-[var(--color-gray-600)]">{sel.s.destino}</p>
+                <p className="text-sm text-[var(--color-muted)]">{sel.s.destino}</p>
                 <Link href={`/app/solicitud/${sel.s.id}`} className="btn-primary mt-3">
-                  Avanzar con esta operación →
+                  Avanzar con esta operación <ArrowRight size={15} />
                 </Link>
               </div>
             </div>

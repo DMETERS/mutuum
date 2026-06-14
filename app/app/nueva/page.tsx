@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ArrowRight, ArrowLeftRight, Check, HandCoins, Wallet } from "@/components/icons";
 import type { TipoSolicitud } from "@/lib/types";
 import { categorias, categoriaById } from "@/data/categories";
 import { SectionTitle, Note } from "@/components/ui";
@@ -18,28 +19,25 @@ export default function NuevaSolicitud() {
   const [enviada, setEnviada] = useState(false);
 
   const cat = categoriaById(categoriaId);
-  const desvio =
-    cat && cat.precioRef > 0 ? Math.round(((monto - cat.precioRef) / cat.precioRef) * 100) : null;
+  const desvio = cat && cat.precioRef > 0 ? Math.round(((monto - cat.precioRef) / cat.precioRef) * 100) : null;
 
   if (enviada) {
     return (
       <div className="mx-auto max-w-xl">
-        <div className="card-minimal animate-in p-8 text-center">
-          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-[var(--color-primary-soft)] text-2xl text-[var(--color-primary)]">
-            ✓
+        <div className="card-minimal animate-in p-9 text-center">
+          <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
+            <Check size={30} strokeWidth={2.4} />
           </div>
-          <h1 className="text-2xl font-bold">Solicitud publicada</h1>
-          <p className="mt-2 text-[var(--color-gray-600)]">
+          <h1 className="font-display text-3xl">Solicitud publicada</h1>
+          <p className="mt-3 text-[var(--color-muted)]">
             Tu solicitud para {tipo === "prestar" ? "prestar" : "tomar"} {usd(monto)} ya está
             activa. El motor empezará a sugerir matches con colegas del NEA.
           </p>
-          <div className="mt-6 flex justify-center gap-3">
+          <div className="mt-7 flex justify-center gap-3">
             <Link href="/app/matching" className="btn-primary">
-              Ver matches →
+              Ver matches <ArrowRight size={16} />
             </Link>
-            <Link href="/app" className="btn-secondary">
-              Volver al inicio
-            </Link>
+            <Link href="/app" className="btn-secondary">Volver al inicio</Link>
           </div>
         </div>
       </div>
@@ -54,84 +52,68 @@ export default function NuevaSolicitud() {
         desc="Cargá los datos. El capital viaja directo entre las partes; Mutuum solo documenta y cobra su comisión."
       />
 
-      <div className="card-minimal space-y-6 p-7">
+      <div className="card-minimal space-y-7 p-8">
         {/* Tipo */}
         <div>
           <label className="font-grotesk text-sm font-semibold">¿Qué querés hacer?</label>
-          <div className="mt-2 grid grid-cols-2 gap-3">
-            {(["tomar", "prestar"] as TipoSolicitud[]).map((t) => (
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {([
+              { t: "tomar" as TipoSolicitud, icon: HandCoins, title: "Tomar crédito", sub: "Necesito financiar algo" },
+              { t: "prestar" as TipoSolicitud, icon: Wallet, title: "Prestar capital", sub: "Tengo excedente para colocar" },
+            ]).map(({ t, icon: Icon, title, sub }) => (
               <button
                 key={t}
                 onClick={() => setTipo(t)}
-                className={`rounded-[var(--radius-lg)] border p-4 text-left transition-colors ${
+                className={`flex items-start gap-3 rounded-[var(--radius-lg)] border p-4 text-left transition-all ${
                   tipo === t
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary-soft)]"
-                    : "border-[var(--color-gray-200)] hover:border-[var(--color-gray-300)]"
+                    ? "border-[var(--color-primary)] bg-[var(--color-primary-tint)] ring-1 ring-[var(--color-primary)]"
+                    : "border-[var(--color-line-strong)] hover:border-[var(--color-ink-soft)]"
                 }`}
               >
-                <p className="font-semibold">{t === "tomar" ? "Tomar crédito" : "Prestar capital"}</p>
-                <p className="text-xs text-[var(--color-gray-600)]">
-                  {t === "tomar"
-                    ? "Necesito financiar algo"
-                    : "Tengo excedente para colocar"}
-                </p>
+                <Icon size={20} className={tipo === t ? "text-[var(--color-primary)]" : "text-[var(--color-faint)]"} />
+                <span>
+                  <span className="block font-semibold">{title}</span>
+                  <span className="block text-xs text-[var(--color-muted)]">{sub}</span>
+                </span>
               </button>
             ))}
           </div>
+          <p className="mt-2.5 flex items-center gap-1.5 text-xs text-[var(--color-faint)]">
+            <ArrowLeftRight size={12} className="shrink-0 text-[var(--color-primary)]" />
+            Es la misma cuenta: elegís el rol en cada operación.
+          </p>
         </div>
 
         {/* Monto */}
         <div>
-          <label className="font-grotesk text-sm font-semibold">
-            Monto · {usd(monto)}
-          </label>
+          <label className="font-grotesk text-sm font-semibold">Monto</label>
+          <p className="font-display tabular text-3xl text-[var(--color-primary)]">{usd(monto)}</p>
           <input
-            type="range"
-            min={500}
-            max={10000}
-            step={250}
-            value={monto}
+            type="range" min={500} max={10000} step={250} value={monto}
             onChange={(e) => setMonto(Number(e.target.value))}
-            className="mt-3 w-full accent-[var(--color-primary)]"
+            className="mt-2 w-full accent-[var(--color-primary)]"
           />
         </div>
 
         {/* Tasa + plazo */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <div>
-            <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">
-              Tasa mín. (% mensual)
+            <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
+              Tasa mín. <span className="text-[var(--color-faint)]">%/mes</span>
             </label>
-            <input
-              type="number"
-              step={0.1}
-              value={tasaMin}
-              onChange={(e) => setTasaMin(Number(e.target.value))}
-              className="input-minimal mt-1 font-mono"
-            />
+            <input type="number" step={0.1} value={tasaMin} onChange={(e) => setTasaMin(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
           <div>
-            <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">
-              Tasa máx. (% mensual)
+            <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
+              Tasa máx. <span className="text-[var(--color-faint)]">%/mes</span>
             </label>
-            <input
-              type="number"
-              step={0.1}
-              value={tasaMax}
-              onChange={(e) => setTasaMax(Number(e.target.value))}
-              className="input-minimal mt-1 font-mono"
-            />
+            <input type="number" step={0.1} value={tasaMax} onChange={(e) => setTasaMax(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
-          <div>
-            <label className="font-grotesk text-xs font-semibold text-[var(--color-gray-500)]">
-              Plazo (meses)
+          <div className="col-span-2 sm:col-span-1">
+            <label className="font-grotesk block whitespace-nowrap text-xs font-semibold text-[var(--color-muted)]">
+              Plazo <span className="text-[var(--color-faint)]">meses</span>
             </label>
-            <input
-              type="number"
-              value={plazo}
-              onChange={(e) => setPlazo(Number(e.target.value))}
-              className="input-minimal mt-1 font-mono"
-            />
+            <input type="number" value={plazo} onChange={(e) => setPlazo(Number(e.target.value))} className="input-minimal mt-1.5 font-mono" />
           </div>
         </div>
 
@@ -140,16 +122,10 @@ export default function NuevaSolicitud() {
           <>
             <div>
               <label className="font-grotesk text-sm font-semibold">Destino del préstamo</label>
-              <select
-                className="select-minimal mt-1"
-                value={categoriaId}
-                onChange={(e) => setCategoriaId(e.target.value)}
-              >
+              <select className="select-minimal mt-1.5" value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
                 <option value="">Elegí una categoría…</option>
                 {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.grupo} · {c.nombre} (ref. {usd(c.precioRef)})
-                  </option>
+                  <option key={c.id} value={c.id}>{c.grupo} · {c.nombre} (ref. {usd(c.precioRef)})</option>
                 ))}
               </select>
             </div>
@@ -169,16 +145,14 @@ export default function NuevaSolicitud() {
         <div>
           <label className="font-grotesk text-sm font-semibold">Justificación / detalle</label>
           <textarea
-            value={destino}
-            onChange={(e) => setDestino(e.target.value)}
-            rows={3}
+            value={destino} onChange={(e) => setDestino(e.target.value)} rows={3}
             placeholder="Ej: equipo de rayos X portátil para el consultorio nuevo"
-            className="input-minimal mt-1 resize-none"
+            className="input-minimal mt-1.5 resize-none"
           />
         </div>
 
         <button onClick={() => setEnviada(true)} className="btn-primary w-full justify-center">
-          Publicar solicitud
+          Publicar solicitud <ArrowRight size={16} />
         </button>
       </div>
     </div>

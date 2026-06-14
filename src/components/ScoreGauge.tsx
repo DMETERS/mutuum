@@ -11,34 +11,44 @@ export function ScoreGauge({ score, size = 160 }: { score: number; size?: number
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={size} height={size / 2 + 16} viewBox={`0 0 ${size} ${size / 2 + 16}`}>
+      <svg width={size} height={size / 2 + 18} viewBox={`0 0 ${size} ${size / 2 + 18}`}>
         <path
           d={`M 12 ${cy} A ${r} ${r} 0 0 1 ${size - 12} ${cy}`}
           fill="none"
-          stroke="var(--color-gray-100)"
-          strokeWidth={12}
+          stroke="var(--color-line)"
+          strokeWidth={9}
           strokeLinecap="round"
         />
         <path
           d={`M 12 ${cy} A ${r} ${r} 0 0 1 ${size - 12} ${cy}`}
           fill="none"
           stroke={band.color}
-          strokeWidth={12}
+          strokeWidth={9}
           strokeLinecap="round"
           strokeDasharray={`${dash} ${circ}`}
+          style={{ transition: "stroke-dasharray 0.8s cubic-bezier(0.22,1,0.36,1)" }}
         />
         <text
           x={cx}
-          y={cy - 6}
+          y={cy - 4}
           textAnchor="middle"
-          className="font-mono"
-          style={{ fontSize: size * 0.2, fontWeight: 700, fill: "var(--color-ink)" }}
+          className="font-display tabular"
+          style={{ fontSize: size * 0.21, fontWeight: 600, fill: "var(--color-ink)" }}
         >
           {score}
         </text>
+        <text
+          x={cx}
+          y={cy + 13}
+          textAnchor="middle"
+          className="font-grotesk"
+          style={{ fontSize: size * 0.075, letterSpacing: "0.1em", fill: "var(--color-faint)" }}
+        >
+          300–850
+        </text>
       </svg>
       <span
-        className="chip -mt-2"
+        className="chip -mt-1"
         style={{ background: "var(--color-primary-soft)", color: band.color }}
       >
         {band.label}

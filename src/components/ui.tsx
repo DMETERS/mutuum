@@ -1,20 +1,39 @@
 import type { ReactNode } from "react";
+import {
+  Star,
+  StarSolid,
+  Info,
+  BadgeCheck,
+  IdCard,
+  ScanFace,
+  Fingerprint,
+  HeartHandshake,
+  type IconType,
+} from "@/components/icons";
 import type { Dentist, Verificaciones } from "@/lib/types";
-import { iniciales, estrellas } from "@/lib/format";
+import { iniciales } from "@/lib/format";
 
-// ── Avatar con iniciales ────────────────────────────────
-export function Avatar({
-  dentist,
-  size = 44,
-}: {
-  dentist: Dentist;
-  size?: number;
-}) {
+// ── Avatar con foto (fallback a iniciales) y anillo de marca ──
+export function Avatar({ dentist, size = 44 }: { dentist: Dentist; size?: number }) {
+  if (dentist.avatar) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={dentist.avatar}
+        alt={`${dentist.nombre} ${dentist.apellido}`}
+        width={size}
+        height={size}
+        loading="lazy"
+        style={{ width: size, height: size }}
+        className="shrink-0 rounded-full object-cover shadow-[var(--shadow-sm)] ring-2 ring-[var(--color-surface)] outline outline-1 outline-[var(--color-primary-soft)]"
+      />
+    );
+  }
   return (
     <div
       aria-hidden
-      style={{ width: size, height: size, fontSize: size * 0.36 }}
-      className="gradient-mutuum font-grotesk flex shrink-0 items-center justify-center rounded-full font-semibold text-white"
+      style={{ width: size, height: size, fontSize: size * 0.34 }}
+      className="gradient-mutuum font-grotesk relative flex shrink-0 items-center justify-center rounded-full font-semibold tracking-wide text-white shadow-[var(--shadow-sm)] ring-1 ring-[rgba(255,255,255,0.4)]"
     >
       {iniciales(dentist.nombre, dentist.apellido)}
     </div>
@@ -22,38 +41,55 @@ export function Avatar({
 }
 
 // ── Chip de estado / etiqueta ───────────────────────────
-const chipTones: Record<string, string> = {
-  green: "bg-[var(--color-primary-soft)] text-[var(--color-primary-dark)]",
-  gray: "bg-[var(--color-gray-100)] text-[var(--color-gray-700)]",
-  amber: "bg-amber-100 text-amber-800",
-  blue: "bg-sky-100 text-sky-800",
+const chipClass: Record<string, string> = {
+  green: "chip-primary",
+  gray: "chip-neutral",
+  brass: "chip-brass",
+  blue: "bg-sky-50 text-sky-800 border border-sky-100",
 };
 
 export function Chip({
   children,
   tone = "gray",
+  icon: Icon,
 }: {
   children: ReactNode;
-  tone?: keyof typeof chipTones;
+  tone?: keyof typeof chipClass;
+  icon?: IconType;
 }) {
-  return <span className={`chip ${chipTones[tone]}`}>{children}</span>;
+  return (
+    <span className={`chip ${chipClass[tone]}`}>
+      {Icon && <Icon size={12} strokeWidth={2.4} />}
+      {children}
+    </span>
+  );
 }
 
-// ── Nota / aclaración (estilo Dmeter) ───────────────────
+// ── Nota / aclaración ───────────────────────────────────
 export function Note({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-[var(--radius-lg)] border-l-2 border-[var(--color-primary)] bg-[var(--color-gray-50)] px-4 py-3 text-sm text-[var(--color-gray-700)]">
-      {children}
+    <div className="flex gap-3 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-primary-tint)] px-4 py-3 text-sm text-[var(--color-ink-soft)]">
+      <Info size={16} className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
+      <div>{children}</div>
     </div>
   );
 }
 
 // ── Reputación en estrellas ─────────────────────────────
-export function Reputacion({ valor }: { valor: number }) {
+export function Reputacion({ valor, size = 13 }: { valor: number; size?: number }) {
+  const full = Math.round(valor);
   return (
-    <span className="inline-flex items-center gap-1.5 text-sm">
-      <span className="tracking-tight text-[var(--color-warning)]">{estrellas(valor)}</span>
-      <span className="font-mono text-xs text-[var(--color-gray-500)]">{valor.toFixed(1)}</span>
+    <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) =>
+          i < full ? (
+            <StarSolid key={i} size={size} className="text-[var(--color-brass)]" />
+          ) : (
+            <Star key={i} size={size} className="text-[var(--color-line-strong)]" />
+          )
+        )}
+      </span>
+      <span className="font-mono text-xs text-[var(--color-muted)]">{valor.toFixed(1)}</span>
     </span>
   );
 }
@@ -61,36 +97,37 @@ export function Reputacion({ valor }: { valor: number }) {
 // ── Insignia genérica ───────────────────────────────────
 export function Insignia({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-gray-200)] px-2.5 py-1 text-xs text-[var(--color-gray-600)]">
-      <span className="text-[var(--color-primary)]">◆</span>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2.5 py-1 text-xs font-medium text-[var(--color-ink-soft)]">
+      <BadgeCheck size={13} className="text-[var(--color-primary)]" />
       {children}
     </span>
   );
 }
 
-// ── Verificaciones (matrícula / Renaper / KYC / vouching) ─
-const labels: Record<keyof Verificaciones, string> = {
-  matricula: "Matrícula vigente",
-  renaper: "Identidad (Renaper)",
-  kyc: "KYC biométrico",
-  vouching: "Aval de colega",
+// ── Verificaciones ──────────────────────────────────────
+const verifMeta: Record<keyof Verificaciones, { label: string; icon: IconType }> = {
+  matricula: { label: "Matrícula vigente", icon: IdCard },
+  renaper: { label: "Identidad (Renaper)", icon: ScanFace },
+  kyc: { label: "KYC biométrico", icon: Fingerprint },
+  vouching: { label: "Aval de colega", icon: HeartHandshake },
 };
 
 export function Verificado({ v }: { v: Verificaciones }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {(Object.keys(labels) as (keyof Verificaciones)[]).map((k) => (
-        <span
-          key={k}
-          className={`chip ${
-            v[k]
-              ? "bg-[var(--color-primary-soft)] text-[var(--color-primary-dark)]"
-              : "bg-[var(--color-gray-100)] text-[var(--color-gray-400)]"
-          }`}
-        >
-          {v[k] ? "✓" : "·"} {labels[k]}
-        </span>
-      ))}
+      {(Object.keys(verifMeta) as (keyof Verificaciones)[]).map((k) => {
+        const { label, icon: Icon } = verifMeta[k];
+        const ok = v[k];
+        return (
+          <span
+            key={k}
+            className={`chip ${ok ? "chip-primary" : "chip-neutral opacity-60"}`}
+          >
+            <Icon size={12} strokeWidth={2.2} />
+            {label}
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -107,13 +144,9 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-6">
-      {eyebrow && (
-        <p className="font-grotesk mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-          {eyebrow}
-        </p>
-      )}
-      <h2 className="text-2xl font-bold text-[var(--color-ink)]">{title}</h2>
-      {desc && <p className="mt-1 max-w-2xl text-sm text-[var(--color-gray-600)]">{desc}</p>}
+      {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
+      <h2 className="font-display text-[1.7rem] leading-tight text-[var(--color-ink)]">{title}</h2>
+      {desc && <p className="mt-2 max-w-2xl text-sm text-[var(--color-muted)]">{desc}</p>}
     </div>
   );
 }

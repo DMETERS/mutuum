@@ -17,6 +17,8 @@ export interface Dentist {
   ciudad: string;
   provincia: Provincia;
   coords: [number, number]; // [lat, lng]
+  /** Foto de perfil (placeholder). Si falta, se muestran las iniciales. */
+  avatar?: string;
   /** Reputación 0–5 (promedio de valoraciones de contrapartes). */
   reputacion: number;
   operaciones: number;
@@ -76,4 +78,19 @@ export interface DemoProfile {
   rol: "prestamista" | "tomador" | "admin";
   titulo: string;
   descripcion: string;
+}
+
+export interface Comision {
+  id: string;
+  /** Fase 1 = cobro manual (comprobante + confirmación del equipo). Fase 2 = automático (CVU por operación). */
+  fase: 1 | 2;
+  tomadorId: string;
+  prestamistaId: string;
+  monto: number; // monto de la operación (USD)
+  comision: number; // comisión de la plataforma (USD)
+  estado: "pendiente" | "confirmada";
+  /** Fase 1: comprobante subido por el tomador. */
+  comprobante?: boolean;
+  detalle: string;
+  hora: string;
 }

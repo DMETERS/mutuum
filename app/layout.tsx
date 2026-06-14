@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Manrope, Space_Grotesk, JetBrains_Mono, Fraunces, Syne } from "next/font/google";
 import { UserProvider } from "@/lib/user-context";
 import "./globals.css";
 
@@ -12,7 +12,7 @@ const manrope = Manrope({
 
 const grotesk = Space_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-grotesk-src",
   display: "swap",
 });
@@ -21,6 +21,21 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-mono-src",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-display-src",
+  display: "swap",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-brand-src",
   display: "swap",
 });
 
@@ -33,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#047857",
+  themeColor: "#0c6b4f",
   width: "device-width",
   initialScale: 1,
 };
@@ -45,7 +60,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${manrope.variable} ${grotesk.variable} ${mono.variable}`}>
+      <body
+        className={`${manrope.variable} ${grotesk.variable} ${mono.variable} ${fraunces.variable} ${syne.variable}`}
+      >
         <UserProvider>{children}</UserProvider>
       </body>
     </html>
