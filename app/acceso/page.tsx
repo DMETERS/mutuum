@@ -64,7 +64,7 @@ export default function Acceso() {
                     <MapPin size={11} className="-mt-0.5 inline" /> {d.ciudad}, {d.provincia} · Mat. {d.matricula}
                   </p>
                 </div>
-                <Reputacion valor={d.reputacion} />
+                {!d.esStaff && <Reputacion valor={d.reputacion} />}
                 <p className="text-sm leading-relaxed text-[var(--color-muted)]">{p.descripcion}</p>
                 <span className="font-grotesk mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary-dark)]">
                   Entrar como {d.nombre}

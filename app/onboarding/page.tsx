@@ -11,9 +11,9 @@ const steps: { key: string; icon: IconType; titulo: string; desc: string; detall
     key: "matricula",
     icon: IdCard,
     titulo: "Matrícula profesional",
-    desc: "Validamos automáticamente que tu matrícula esté vigente en el colegio de odontólogos.",
-    detalle: "Matrícula OCH-2418 · Colegio de Odontólogos del Chaco · estado: vigente",
-    cta: "Validar matrícula",
+    desc: "Validación automática contra REFEPS (Registro Federal de Profesionales de la Salud). Si no figurás, seguimos por tu colegio provincial y, si hace falta, subís tu credencial.",
+    detalle: "REFEPS · Matrícula OCH-2418 · Colegio de Odontólogos del Chaco · vigente",
+    cta: "Validar con REFEPS",
   },
   {
     key: "renaper",
@@ -135,6 +135,21 @@ export default function Onboarding() {
             )}
           </div>
         </div>
+
+        {/* Cascada de validación de matrícula (sin gaps) */}
+        {current === 0 && (
+          <div className="mt-4 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-paper-2)] p-4 text-xs text-[var(--color-muted)]">
+            <p className="font-grotesk mb-2 font-semibold text-[var(--color-ink-soft)]">
+              Cómo validamos la matrícula (sin gaps)
+            </p>
+            <ol className="space-y-1">
+              <li>1 · Automático con REFEPS — estado de matrícula vigente.</li>
+              <li>2 · Si no figura, adaptador del colegio provincial (Chaco / Corrientes / Misiones).</li>
+              <li>3 · Si aún no se confirma, quedás «pendiente de validación» y subís tu credencial; el equipo la aprueba desde el panel.</li>
+              <li>4 · El aval de un colega suma como refuerzo (no reemplaza la matrícula).</li>
+            </ol>
+          </div>
+        )}
 
         {/* Cierre */}
         {todoListo && (

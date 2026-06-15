@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Clock, Zap, ClipboardCheck, ArrowRight } from "@/components/icons";
+import { Check, Clock, Zap, ClipboardCheck, ArrowRight, IdCard, BadgeCheck } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
 import { isAdmin, dentistById } from "@/data/dentists";
-import { comisiones as seed } from "@/data/commissions";
+import { comisiones as seedComisiones } from "@/data/commissions";
+import { validacionesPendientes as seedValidaciones } from "@/data/validations";
 import type { Comision } from "@/lib/types";
+import type { ValidacionPendiente } from "@/data/validations";
 import { Avatar, Chip, SectionTitle, Note } from "@/components/ui";
 import { usd } from "@/lib/format";
+
+type ValItem = ValidacionPendiente & { resuelto?: "aprobada" | "rechazada" };
 
 function ParteOperacion({ id, rol }: { id: string; rol: string }) {
   const d = dentistById(id);
@@ -25,58 +29,114 @@ function ParteOperacion({ id, rol }: { id: string; rol: string }) {
   );
 }
 
+const estadoVal: Record<ValidacionPendiente["estado"], { label: string; tone: "blue" | "amber" | "gray" }> = {
+  credencial_subida: { label: "Credencial subida", tone: "blue" },
+  auto_pendiente: { label: "Adaptador reintentando", tone: "amber" },
+  esperando_credencial: { label: "Esperando credencial", tone: "gray" },
+};
+
 export default function Panel() {
   const { user, ready } = useUser();
   const router = useRouter();
-  const [items, setItems] = useState<Comision[]>(seed);
+  const [comis, setComis] = useState<Comision[]>(seedComisiones);
+  const [vals, setVals] = useState<ValItem[]>(seedValidaciones);
 
-  // Guard: solo operadores del equipo (admin).
   useEffect(() => {
     if (ready && user && !isAdmin(user.id)) router.replace("/app");
   }, [ready, user, router]);
 
-  const fase1 = useMemo(() => items.filter((c) => c.fase === 1), [items]);
-  const fase2 = useMemo(() => items.filter((c) => c.fase === 2), [items]);
-  const pendientes = fase1.filter((c) => c.estado === "pendiente").length;
-  const totalDia = items.reduce((a, c) => a + c.comision, 0);
+  const fase1 = useMemo(() => comis.filter((c) => c.fase === 1), [comis]);
+  const fase2 = useMemo(() => comis.filter((c) => c.fase === 2), [comis]);
+  const pendientesC = fase1.filter((c) => c.estado === "pendiente").length;
+  const pendientesV = vals.filter((v) => !v.resuelto).length;
 
-  const confirmar = (id: string) =>
-    setItems((prev) => prev.map((c) => (c.id === id ? { ...c, estado: "confirmada" } : c)));
+  const confirmarComision = (id: string) =>
+    setComis((prev) => prev.map((c) => (c.id === id ? { ...c, estado: "confirmada" } : c)));
+  const resolverVal = (id: string, r: "aprobada" | "rechazada") =>
+    setVals((prev) => prev.map((v) => (v.id === id ? { ...v, resuelto: r } : v)));
 
   if (!ready || !user || !isAdmin(user.id)) {
     return <div className="grid place-items-center py-20 text-sm text-[var(--color-muted)]">Acceso restringido al equipo…</div>;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <SectionTitle
         eyebrow="Panel del equipo"
-        title="Confirmación de comisiones"
-        desc="Consola interna para destrabar operaciones. La Fase 1 confirma el comprobante a mano; la Fase 2 acredita en automático con un CVU por operación."
+        title="Operación interna"
+        desc="Validación de matrículas pendientes y confirmación de comisiones. Lo que no resuelve la automatización, se aprueba a mano acá."
       />
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="card-minimal p-5">
-          <p className="eyebrow">Comisiones del día</p>
-          <p className="font-display tabular mt-2 text-4xl text-[var(--color-primary)]">{usd(totalDia)}</p>
+          <p className="eyebrow flex items-center gap-1.5"><IdCard size={13} /> Matrículas a validar</p>
+          <p className="font-display tabular mt-2 text-4xl">{pendientesV}</p>
         </div>
         <div className="card-minimal p-5">
-          <p className="eyebrow flex items-center gap-1.5"><Clock size={13} /> Pendientes (Fase 1)</p>
-          <p className="font-display tabular mt-2 text-4xl">{pendientes}</p>
+          <p className="eyebrow flex items-center gap-1.5"><Clock size={13} /> Comisiones pendientes</p>
+          <p className="font-display tabular mt-2 text-4xl">{pendientesC}</p>
         </div>
         <div className="card-minimal p-5">
-          <p className="eyebrow flex items-center gap-1.5"><Zap size={13} className="text-[var(--color-primary)]" /> Auto (Fase 2)</p>
+          <p className="eyebrow flex items-center gap-1.5"><Zap size={13} className="text-[var(--color-primary)]" /> Cobros automáticos</p>
           <p className="font-display tabular mt-2 text-4xl">{fase2.length}</p>
         </div>
       </div>
 
-      {/* Fase 1 — manual */}
+      {/* ── Validaciones de matrícula ── */}
+      <section>
+        <div className="mb-2 flex items-center gap-2">
+          <IdCard size={18} className="text-[var(--color-primary)]" />
+          <h3 className="font-semibold">Validaciones de matrícula</h3>
+        </div>
+        <p className="mb-4 text-sm text-[var(--color-muted)]">
+          Casos que no resolvió la validación automática (REFEPS → adaptador provincial). El
+          usuario opera marcado como «pendiente» hasta que se apruebe acá.
+        </p>
+        <div className="space-y-3">
+          {vals.map((v) => {
+            const meta = estadoVal[v.estado];
+            return (
+              <div key={v.id} className="card-minimal flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{v.nombre} {v.apellido}</p>
+                    <span className="font-mono text-[11px] text-[var(--color-faint)]">
+                      Mat. {v.matricula} · {v.provincia}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--color-muted)]">{v.detalle}</p>
+                  <p className="mt-1 font-mono text-[11px] text-[var(--color-faint)]">{v.hora}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  {v.resuelto ? (
+                    <Chip tone={v.resuelto === "aprobada" ? "green" : "gray"}>
+                      {v.resuelto === "aprobada" ? <><Check size={12} strokeWidth={3} /> Validada</> : "Rechazada"}
+                    </Chip>
+                  ) : v.estado === "credencial_subida" ? (
+                    <>
+                      <button onClick={() => resolverVal(v.id, "rechazada")} className="btn-ghost">
+                        Rechazar
+                      </button>
+                      <button onClick={() => resolverVal(v.id, "aprobada")} className="btn-primary">
+                        <BadgeCheck size={15} /> Aprobar matrícula
+                      </button>
+                    </>
+                  ) : (
+                    <Chip tone={meta.tone}><Clock size={12} /> {meta.label}</Chip>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Comisiones ── */}
       <section>
         <div className="mb-4 flex items-center gap-2">
           <ClipboardCheck size={18} className="text-[var(--color-primary)]" />
-          <h3 className="font-semibold">Fase 1 · confirmación manual</h3>
-          <Chip tone="gray">comprobante + panel</Chip>
+          <h3 className="font-semibold">Comisiones · Fase 1 (confirmación manual)</h3>
         </div>
         <div className="space-y-3">
           {fase1.map((c) => {
@@ -96,7 +156,7 @@ export default function Panel() {
                   {confirmada ? (
                     <Chip tone="green"><Check size={12} strokeWidth={3} /> Confirmada</Chip>
                   ) : c.comprobante ? (
-                    <button onClick={() => confirmar(c.id)} className="btn-primary">
+                    <button onClick={() => confirmarComision(c.id)} className="btn-primary">
                       <Check size={15} /> Confirmar
                     </button>
                   ) : (
@@ -107,18 +167,15 @@ export default function Panel() {
             );
           })}
         </div>
-      </section>
 
-      {/* Fase 2 — automático */}
-      <section>
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-4 mt-6 flex items-center gap-2">
           <Zap size={18} className="text-[var(--color-primary)]" />
-          <h3 className="font-semibold">Fase 2 · cobro automático</h3>
+          <h3 className="font-semibold">Comisiones · Fase 2 (cobro automático)</h3>
           <Chip tone="green">CVU por operación</Chip>
         </div>
         <div className="space-y-3">
           {fase2.map((c) => (
-            <div key={c.id} className="card-minimal flex flex-col gap-4 p-5 opacity-95 lg:flex-row lg:items-center lg:justify-between">
+            <div key={c.id} className="card-minimal flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <ParteOperacion id={c.tomadorId} rol="tomador" />
                 <ArrowRight size={16} className="hidden text-[var(--color-faint)] sm:block" />
@@ -143,7 +200,7 @@ export default function Panel() {
         </div>
       </section>
 
-      <Link href="/app" className="btn-ghost">← Volver al inicio</Link>
+      <Link href="/acceso" className="btn-ghost">← Cambiar de cuenta</Link>
     </div>
   );
 }

@@ -18,6 +18,8 @@ export const dentists: Dentist[] = [
     insignias: ["Fundadora", "100% cumplimiento", "Avala colegas"],
     bio: "Odontóloga general, consultorio propio en el centro de Resistencia. Coloca excedentes a colegas de confianza.",
     verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    validacionVia: "REFEPS",
   },
   {
     id: "d-martin",
@@ -35,6 +37,8 @@ export const dentists: Dentist[] = [
     insignias: ["Buen pagador", "Endodoncista"],
     bio: "Endodoncista, recién mudó el consultorio. Busca financiar equipamiento sin pasar por el banco.",
     verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    validacionVia: "REFEPS",
     avaladoPor: "d-laura",
   },
   {
@@ -53,6 +57,8 @@ export const dentists: Dentist[] = [
     insignias: ["Ortodoncista", "Avala colegas"],
     bio: "Ortodoncista en Posadas. Presta y toma según el momento del año.",
     verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    validacionVia: "REFEPS",
     avaladoPor: "d-laura",
   },
   {
@@ -71,6 +77,8 @@ export const dentists: Dentist[] = [
     insignias: ["Nuevo en la red"],
     bio: "Odontólogo general. Necesita renovar el sillón odontológico.",
     verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    validacionVia: "REFEPS",
     avaladoPor: "d-sofia",
   },
   {
@@ -89,6 +97,8 @@ export const dentists: Dentist[] = [
     insignias: ["Buen pagador", "Implantóloga"],
     bio: "Implantóloga en Goya. Coloca parte de sus ahorros entre colegas.",
     verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    validacionVia: "REFEPS",
     avaladoPor: "d-laura",
   },
   {
@@ -106,8 +116,28 @@ export const dentists: Dentist[] = [
     antiguedadMeses: 7,
     insignias: ["Nuevo en la red"],
     bio: "Odontopediatra. Busca capital para insumos de la temporada escolar.",
-    verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    verificaciones: { matricula: false, renaper: true, kyc: true, vouching: true },
+    validado: false,
     avaladoPor: "d-sofia",
+  },
+  // Cuenta operativa del equipo (no es odontólogo): valida matrículas y confirma comisiones.
+  {
+    id: "d-equipo",
+    nombre: "Equipo",
+    apellido: "Mutuum",
+    matricula: "STAFF",
+    ciudad: "Resistencia",
+    provincia: "Chaco",
+    coords: [-27.4514, -58.9867],
+    reputacion: 0,
+    operaciones: 0,
+    score: 0,
+    antiguedadMeses: 0,
+    insignias: [],
+    bio: "Cuenta del equipo de Mutuum. Opera el panel: confirma comisiones y valida matrículas pendientes.",
+    verificaciones: { matricula: true, renaper: true, kyc: true, vouching: true },
+    validado: true,
+    esStaff: true,
   },
 ];
 
@@ -132,10 +162,17 @@ export const demoProfiles: DemoProfile[] = [
   },
   {
     dentistId: "d-sofia",
-    rol: "admin",
+    rol: "prestamista",
     titulo: "Dra. Sofía Acosta",
     descripcion:
-      "Perfil mixto: tiene una solicitud para prestar y otra para tomar. Además es operadora del equipo, con acceso al panel de confirmación de comisiones (Fase 1).",
+      "Perfil mixto: tiene una solicitud para prestar y otra para tomar. El rol se define en cada operación.",
+  },
+  {
+    dentistId: "d-equipo",
+    rol: "admin",
+    titulo: "Equipo Mutuum (operador)",
+    descripcion:
+      "Cuenta del equipo, no odontólogo. Entra al panel: confirma comisiones y aprueba las validaciones de matrícula pendientes. No presta ni toma.",
   },
 ];
 

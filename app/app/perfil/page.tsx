@@ -4,7 +4,7 @@ import { Award, ShieldCheck, MapPin, ArrowLeftRight } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
 import { dentistById } from "@/data/dentists";
 import { ScoreGauge } from "@/components/ScoreGauge";
-import { Avatar, Reputacion, Verificado, Insignia, SectionTitle } from "@/components/ui";
+import { Avatar, Reputacion, Verificado, Insignia, SectionTitle, ValidacionBadge } from "@/components/ui";
 
 export default function Perfil() {
   const { user } = useUser();
@@ -24,6 +24,7 @@ export default function Perfil() {
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-4">
             <Reputacion valor={user.reputacion} size={15} />
+            <ValidacionBadge validado={user.validado} via={user.validacionVia} />
             <span className="font-mono text-xs text-[var(--color-faint)]">
               {user.operaciones} operaciones · {user.antiguedadMeses} meses en la red
             </span>

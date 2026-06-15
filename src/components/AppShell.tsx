@@ -38,7 +38,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const nav = isAdmin(user.id) ? [...baseNav, panelNav] : baseNav;
+  // El operador del equipo ve solo el panel; los odontólogos, su recorrido.
+  const nav = isAdmin(user.id) ? [panelNav] : baseNav;
 
   return (
     <div className="min-h-screen">
@@ -73,7 +74,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <p className="text-sm font-semibold leading-tight">
                 {user.nombre} {user.apellido}
               </p>
-              <p className="font-mono text-xs text-[var(--color-faint)]">Mat. {user.matricula}</p>
+              <p className="font-mono text-xs text-[var(--color-faint)]">
+                {user.esStaff ? "Operador del equipo" : `Mat. ${user.matricula}`}
+              </p>
             </div>
             <Avatar dentist={user} size={38} />
             <button

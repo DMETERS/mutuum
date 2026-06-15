@@ -30,6 +30,12 @@ export interface Dentist {
   verificaciones: Verificaciones;
   /** Avalado por (id de un colega ya registrado). */
   avaladoPor?: string;
+  /** Matrícula validada (true) o pendiente de validación (false). */
+  validado: boolean;
+  /** Fuente de la validación cuando está validado. */
+  validacionVia?: "REFEPS" | "Colegio" | "Manual";
+  /** Cuenta operativa del equipo Mutuum (no es odontólogo). */
+  esStaff?: boolean;
 }
 
 export type TipoSolicitud = "prestar" | "tomar";

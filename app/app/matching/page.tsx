@@ -8,7 +8,7 @@ import { useUser } from "@/lib/user-context";
 import { solicitudes } from "@/data/requests";
 import { dentistById } from "@/data/dentists";
 import type { Provincia, TipoSolicitud } from "@/lib/types";
-import { Avatar, Reputacion, Chip, SectionTitle } from "@/components/ui";
+import { Avatar, Reputacion, Chip, SectionTitle, ValidacionBadge } from "@/components/ui";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { usd, pct } from "@/lib/format";
 
@@ -144,6 +144,9 @@ export default function Matching() {
                       <MapPin size={11} className="-mt-0.5 inline" /> {autor.ciudad}, {autor.provincia} · {s.distanciaKm} km
                     </p>
                     <div className="mt-1.5"><Reputacion valor={autor.reputacion} /></div>
+                    {!autor.validado && (
+                      <div className="mt-2"><ValidacionBadge validado={false} /></div>
+                    )}
                   </div>
                 </div>
                 <Chip tone={s.tipo === "prestar" ? "green" : "blue"}>

@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, Sparkles, TrendingUp, Award, ShieldCheck } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
+import { isAdmin } from "@/data/dentists";
 import { solicitudes } from "@/data/requests";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { Verificado, Insignia, Reputacion, SectionTitle, Chip } from "@/components/ui";
@@ -10,7 +13,14 @@ import { usd, pct } from "@/lib/format";
 
 export default function Dashboard() {
   const { user } = useUser();
-  if (!user) return null;
+  const router = useRouter();
+
+  // El operador del equipo no tiene dashboard de odontólogo: va al panel.
+  useEffect(() => {
+    if (user && isAdmin(user.id)) router.replace("/app/panel");
+  }, [user, router]);
+
+  if (!user || isAdmin(user.id)) return null;
 
   const propias = solicitudes.filter((s) => s.autorId === user.id);
   const oportunidades = solicitudes.filter((s) => s.autorId !== user.id);

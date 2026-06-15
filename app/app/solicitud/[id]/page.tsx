@@ -12,7 +12,7 @@ import { solicitudById } from "@/data/requests";
 import { dentistById } from "@/data/dentists";
 import { mensajesDeSolicitud } from "@/data/messages";
 import type { Mensaje } from "@/lib/types";
-import { Avatar, Reputacion, Verificado, Chip, Note, SectionTitle } from "@/components/ui";
+import { Avatar, Reputacion, Verificado, Chip, Note, SectionTitle, ValidacionBadge } from "@/components/ui";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { LoanSim } from "@/components/LoanSim";
 import { usd, pct } from "@/lib/format";
@@ -86,6 +86,9 @@ export default function DetalleOperacion() {
                       : `${autor.provincia} · datos completos al pagar la comisión`}
                   </p>
                   <div className="mt-1.5"><Reputacion valor={autor.reputacion} /></div>
+                  <div className="mt-2">
+                    <ValidacionBadge validado={autor.validado} via={autor.validacionVia} />
+                  </div>
                 </div>
               </div>
               <Chip tone={solicitud.tipo === "prestar" ? "green" : "blue"}>

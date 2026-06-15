@@ -9,6 +9,7 @@ import {
   Fingerprint,
   HeartHandshake,
   UserRound,
+  Clock,
   type IconType,
 } from "@/components/icons";
 import type { Dentist, Verificaciones } from "@/lib/types";
@@ -67,6 +68,7 @@ const chipClass: Record<string, string> = {
   gray: "chip-neutral",
   brass: "chip-brass",
   blue: "bg-sky-50 text-sky-800 border border-sky-100",
+  amber: "border border-amber-200 bg-amber-50 text-amber-800",
 };
 
 export function Chip({
@@ -150,6 +152,30 @@ export function Verificado({ v }: { v: Verificaciones }) {
         );
       })}
     </div>
+  );
+}
+
+// ── Badge de validación de matrícula ────────────────────
+export function ValidacionBadge({
+  validado,
+  via,
+}: {
+  validado: boolean;
+  via?: string;
+}) {
+  if (validado) {
+    return (
+      <span className="chip chip-primary">
+        <BadgeCheck size={12} strokeWidth={2.2} />
+        Matrícula verificada{via ? ` · ${via}` : ""}
+      </span>
+    );
+  }
+  return (
+    <span className="chip border border-amber-200 bg-amber-50 text-amber-800">
+      <Clock size={12} strokeWidth={2.2} />
+      Pendiente de validación
+    </span>
   );
 }
 
