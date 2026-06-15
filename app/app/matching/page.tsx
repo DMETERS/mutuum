@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import { ArrowRight, MapPin, SlidersHorizontal, Gauge } from "@/components/icons";
+import { ArrowRight, MapPin, SlidersHorizontal, Gauge, Lock } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
 import { solicitudes } from "@/data/requests";
 import { dentistById } from "@/data/dentists";
@@ -115,9 +115,14 @@ export default function Matching() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         {/* Lista */}
         <div className="space-y-4">
-          <p className="font-mono text-xs text-[var(--color-muted)]">
-            {filtradas.length} resultado{filtradas.length === 1 ? "" : "s"}
-          </p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-mono text-xs text-[var(--color-muted)]">
+              {filtradas.length} resultado{filtradas.length === 1 ? "" : "s"}
+            </p>
+            <span className="flex items-center gap-1.5 text-xs text-[var(--color-faint)]">
+              <Lock size={12} /> Identidad protegida hasta avanzar
+            </span>
+          </div>
           {filtradas.map(({ s, autor }) => (
             <div
               key={s.id}
@@ -125,16 +130,16 @@ export default function Matching() {
               onClick={() => setSelected(s.id)}
               onFocus={() => setSelected(s.id)}
               tabIndex={0}
-              aria-label={`Solicitud de ${autor.nombre} ${autor.apellido}, ${usd(s.monto)}`}
+              aria-label={`Solicitud de ${autor.nombre} ${autor.apellido[0]}., ${usd(s.monto)}`}
               className={`card-minimal cursor-pointer p-5 transition-all ${
                 selected === s.id ? "border-[var(--color-primary)] ring-1 ring-[var(--color-primary)]" : ""
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <Avatar dentist={autor} size={46} />
+                  <Avatar dentist={autor} size={46} masked />
                   <div>
-                    <p className="font-semibold leading-tight">{autor.nombre} {autor.apellido}</p>
+                    <p className="font-semibold leading-tight">{autor.nombre} {autor.apellido[0]}.</p>
                     <p className="font-mono text-xs text-[var(--color-faint)]">
                       <MapPin size={11} className="-mt-0.5 inline" /> {autor.ciudad}, {autor.provincia} · {s.distanciaKm} km
                     </p>
@@ -197,7 +202,7 @@ export default function Matching() {
               <div>
                 <p className="eyebrow">Match destacado</p>
                 <p className="mt-1.5 font-semibold">
-                  {sel.autor.nombre} {sel.autor.apellido} · <span className="font-mono">{usd(sel.s.monto)}</span>
+                  {sel.autor.nombre} {sel.autor.apellido[0]}. · <span className="font-mono">{usd(sel.s.monto)}</span>
                 </p>
                 <p className="text-sm text-[var(--color-muted)]">{sel.s.destino}</p>
                 <Link href={`/app/solicitud/${sel.s.id}`} className="btn-primary mt-3">

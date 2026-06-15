@@ -8,13 +8,34 @@ import {
   ScanFace,
   Fingerprint,
   HeartHandshake,
+  UserRound,
   type IconType,
 } from "@/components/icons";
 import type { Dentist, Verificaciones } from "@/lib/types";
 import { iniciales } from "@/lib/format";
 
 // ── Avatar con foto (fallback a iniciales) y anillo de marca ──
-export function Avatar({ dentist, size = 44 }: { dentist: Dentist; size?: number }) {
+// `masked` = identidad protegida (descubrimiento): sin foto ni iniciales reales.
+export function Avatar({
+  dentist,
+  size = 44,
+  masked = false,
+}: {
+  dentist: Dentist;
+  size?: number;
+  masked?: boolean;
+}) {
+  if (masked) {
+    return (
+      <div
+        aria-hidden
+        style={{ width: size, height: size }}
+        className="gradient-mutuum flex shrink-0 items-center justify-center rounded-full text-white shadow-[var(--shadow-sm)] ring-2 ring-[var(--color-surface)]"
+      >
+        <UserRound size={size * 0.5} />
+      </div>
+    );
+  }
   if (dentist.avatar) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
