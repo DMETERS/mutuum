@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Clock, Zap, ClipboardCheck, ArrowRight, IdCard, BadgeCheck } from "@/components/icons";
 import { useUser } from "@/lib/user-context";
@@ -19,11 +19,33 @@ function ParteOperacion({ id, rol }: { id: string; rol: string }) {
   const d = dentistById(id);
   if (!d) return null;
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <Avatar dentist={d} size={32} />
-      <div className="leading-tight">
-        <p className="text-sm font-medium">{d.nombre} {d.apellido}</p>
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-sm font-medium">{d.nombre} {d.apellido}</p>
         <p className="font-mono text-[11px] text-[var(--color-faint)]">{rol}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Tarjeta de comisión (responsive) ──────────────────────
+// Mobile: partes apiladas (flecha vertical) → monto + acción en fila.
+// Desktop (lg): partes en fila a la izquierda · monto + acción a la derecha.
+function ComisionCard({ c, action }: { c: Comision; action: ReactNode }) {
+  return (
+    <div className="card-minimal flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-x-5 sm:gap-y-2">
+        <ParteOperacion id={c.tomadorId} rol="tomador" />
+        <ArrowRight size={16} className="hidden shrink-0 rotate-90 text-[var(--color-faint)] sm:block sm:rotate-0" />
+        <ParteOperacion id={c.prestamistaId} rol="prestamista" />
+      </div>
+      <div className="flex items-center justify-between gap-4 border-t border-[var(--color-line)] pt-3 sm:gap-6 lg:shrink-0 lg:justify-end lg:border-t-0 lg:pt-0">
+        <div className="text-left lg:text-right">
+          <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">{usd(c.comision)}</p>
+          <p className="font-mono text-[11px] text-[var(--color-faint)]">de {usd(c.monto)} · {c.hora}</p>
+        </div>
+        {action}
       </div>
     </div>
   );
@@ -142,28 +164,21 @@ export default function Panel() {
           {fase1.map((c) => {
             const confirmada = c.estado === "confirmada";
             return (
-              <div key={c.id} className="card-minimal flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                  <ParteOperacion id={c.tomadorId} rol="tomador" />
-                  <ArrowRight size={16} className="hidden text-[var(--color-faint)] sm:block" />
-                  <ParteOperacion id={c.prestamistaId} rol="prestamista" />
-                </div>
-                <div className="flex items-center justify-between gap-6">
-                  <div className="text-right">
-                    <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">{usd(c.comision)}</p>
-                    <p className="font-mono text-[11px] text-[var(--color-faint)]">de {usd(c.monto)} · {c.hora}</p>
-                  </div>
-                  {confirmada ? (
+              <ComisionCard
+                key={c.id}
+                c={c}
+                action={
+                  confirmada ? (
                     <Chip tone="green"><Check size={12} strokeWidth={3} /> Confirmada</Chip>
                   ) : c.comprobante ? (
-                    <button onClick={() => confirmarComision(c.id)} className="btn-primary">
+                    <button onClick={() => confirmarComision(c.id)} className="btn-primary shrink-0">
                       <Check size={15} /> Confirmar
                     </button>
                   ) : (
                     <Chip tone="gray"><Clock size={12} /> Esperando comprobante</Chip>
-                  )}
-                </div>
-              </div>
+                  )
+                }
+              />
             );
           })}
         </div>
@@ -175,20 +190,11 @@ export default function Panel() {
         </div>
         <div className="space-y-3">
           {fase2.map((c) => (
-            <div key={c.id} className="card-minimal flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                <ParteOperacion id={c.tomadorId} rol="tomador" />
-                <ArrowRight size={16} className="hidden text-[var(--color-faint)] sm:block" />
-                <ParteOperacion id={c.prestamistaId} rol="prestamista" />
-              </div>
-              <div className="flex items-center justify-between gap-6">
-                <div className="text-right">
-                  <p className="font-mono text-sm font-semibold text-[var(--color-primary-dark)]">{usd(c.comision)}</p>
-                  <p className="font-mono text-[11px] text-[var(--color-faint)]">de {usd(c.monto)} · {c.hora}</p>
-                </div>
-                <Chip tone="green"><Zap size={12} /> Acreditada al instante</Chip>
-              </div>
-            </div>
+            <ComisionCard
+              key={c.id}
+              c={c}
+              action={<Chip tone="green"><Zap size={12} /> Acreditada al instante</Chip>}
+            />
           ))}
         </div>
         <div className="mt-4">
